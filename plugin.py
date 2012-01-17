@@ -225,13 +225,13 @@ class meteoptMain(Screen):
 			
 # Make text safe for xml parser (Google old xml format without the character set declaration)
 	def checkXmlSanity(self, content):
-		content = content.replace('�', 'a')
-		content = content.replace('�', 'a')
-		content = content.replace('�', 'e')
-		content = content.replace('�', 'e')
-		content = content.replace('�', 'i')
-		content = content.replace('�', 'o')
-		content = content.replace('�', 'u')
+		content = content.replace('à', 'a')
+                content = content.replace('á', 'a')
+                content = content.replace('è', 'e')
+                content = content.replace('é', 'e')
+                content = content.replace('ì', 'i')
+                content = content.replace('ò', 'o')
+                content = content.replace('ù', 'u')
 		return content
 
 	def get_Url(self):
