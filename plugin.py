@@ -225,13 +225,13 @@ class meteoptMain(Screen):
 			
 # Make text safe for xml parser (Google old xml format without the character set declaration)
 	def checkXmlSanity(self, content):
-		content = content.replace('à', 'a')
-		content = content.replace('á', 'a')
-		content = content.replace('è', 'e')
-		content = content.replace('é', 'e')
-		content = content.replace('ì', 'i')
-		content = content.replace('ò', 'o')
-		content = content.replace('ù', 'u')
+		content = content.replace('ï¿½', 'a')
+		content = content.replace('ï¿½', 'a')
+		content = content.replace('ï¿½', 'e')
+		content = content.replace('ï¿½', 'e')
+		content = content.replace('ï¿½', 'i')
+		content = content.replace('ï¿½', 'o')
+		content = content.replace('ï¿½', 'u')
 		return content
 
 	def get_Url(self):
@@ -271,7 +271,7 @@ class MeteoptSelectCity(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 
-		self.list = ["Amadora","Braga","Coimbra","Lisbo","Porto"]
+		self.list = ["Amadora","Braga","Coimbra","Lisboa","Porto"]
 				
 		self["list"] = List(self.list)
 		self["lab1"] = Label("Ok para confirmar")
