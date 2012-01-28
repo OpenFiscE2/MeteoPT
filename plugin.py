@@ -1,5 +1,6 @@
 # -*- coding: iso-8859-1 -*-
 
+
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Plugins.Plugin import PluginDescriptor
@@ -8,17 +9,24 @@ from Components.Sources.List import List
 from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Tools.Directories import fileExists
+from Components.Button import Button
+
 
 from urllib2 import Request, urlopen, URLError, HTTPError
 from xml.dom import minidom, Node
 from enigma import loadPic, eTimer
 
-METEOPT = "Meteo Portugal Info Plugin v 0.1\n\nAuthor(s): Baseado no Trabalhado Bacicciosat - "
+METEOPT = "Meteo Portugal Info Plugin v 0.1\n\nAuthor(s): Baseado no Trabalhado Bacicciosat -"
 
 class meteoptMain(Screen):
 	skin = """
 	<screen position="center,center" size="720,576" flags="wfNoBorder">
 	<ePixmap pixmap="/home/user/enigma2/lib/enigma2/python/Plugins/Extensions/MeteoPT/backg.png" position="0,0" size="720,576" alphatest="on" />
+                <ePixmap pixmap="/home/user/enigma2/share/enigma2/skin_default/buttons/red-big.png" position="150,565" size="220,15" alphatest="on" />
+		<ePixmap pixmap="/home/user/enigma2/share/enigma2/skin_default/buttons/green.png" position="400,565" size="140,15" alphatest="on" />
+		
+		<widget name="key_red" position="110,545" size="270,24" zPosition="1" font="Regular;24" foregroundColor="red" transparent="1" />
+		<widget name="key_green" position="430,545" size="80,24" zPosition="1" font="Regular;24" foregroundColor="green" transparent="1" />
 		<widget name="lab1" position="10,100" halign="center" size="700,30" zPosition="1" font="Regular;24" valign="top" transparent="1" />
 		<widget name="lab2" position="10,130" halign="center" size="700,30" zPosition="1" font="Regular;22" valign="top" transparent="1" />
 		<widget name="lab3" position="340,180" size="40,40" zPosition="1" />
@@ -62,7 +70,9 @@ class meteoptMain(Screen):
 			"back": self.close,
 			"ok": self.close
 		})
-		
+        
+        	self["key_red"] = Button(_("Ver Cidade"))
+                self["key_green"] = Button(_("Info"))
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.startConnection)
 		self.onShow.append(self.startShow)
@@ -90,9 +100,13 @@ class meteoptMain(Screen):
     			maintext = "Error: Page not available !"
 		else:
 			xml_response = handler.read()
+                        fileout = open("/tmp/teste", "wb")
+                        fileout.write(xml_response)
+                        fileout.close()
 			#xml_response = handler.read().decode('iso-8859-1').encode('utf-8')
 			xml_response = self.checkXmlSanity(xml_response)
    			dom = minidom.parseString(xml_response)
+
     			handler.close()
 			
 			maintext = ""
@@ -108,7 +122,7 @@ class meteoptMain(Screen):
         				tmp_conditions = {}
        					for tag2 in list_of_tags2:
             					try: 
-                					tmp_conditions[tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
+                		                        tmp_conditions[tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
             					except IndexError:
                 					pass
         				weather_data[tag] = tmp_conditions
@@ -225,13 +239,13 @@ class meteoptMain(Screen):
 			
 # Make text safe for xml parser (Google old xml format without the character set declaration)
 	def checkXmlSanity(self, content):
-		content = content.replace('Ã ', 'a')
-                content = content.replace('Ã¡', 'a')
-                content = content.replace('Ã¨', 'e')
-                content = content.replace('Ã©', 'e')
-                content = content.replace('Ã¬', 'i')
-                content = content.replace('Ã²', 'o')
-                content = content.replace('Ã¹', 'u')
+		content = content.replace('à', 'a')
+		content = content.replace('á', 'a')
+		content = content.replace('è', 'e')
+		content = content.replace('é', 'e')
+		content = content.replace('ì', 'i')
+		content = content.replace('ò', 'o')
+		content = content.replace('ù', 'u')
 		return content
 
 	def get_Url(self):
@@ -252,7 +266,7 @@ class meteoptMain(Screen):
 
 	def key_green(self):
 		box = self.session.open(MessageBox, METEOPT, MessageBox.TYPE_INFO)
-		box.setTitle(_("Informacao"))
+		box.setTitle(_("Informazioni"))
 		
 	def key_red(self):
 		self.session.openWithCallback(self.updateInfo, MeteoptSelectCity)
@@ -274,7 +288,7 @@ class MeteoptSelectCity(Screen):
 		self.list = ["Amadora","Braga","Coimbra","Lisboa","Porto"]
 				
 		self["list"] = List(self.list)
-		self["lab1"] = Label("Ok para confirmar")
+		self["lab1"] = Label("Ok para confirmare")
 		
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
@@ -285,7 +299,7 @@ class MeteoptSelectCity(Screen):
 
 	def key_green(self):
 		box = self.session.open(MessageBox, METEOPT, MessageBox.TYPE_INFO)
-		box.setTitle(_("Informazioni"))
+		box.setTitle(_("Informacao"))
 
 	def saveCfg(self):
 		city = self["list"].getCurrent()
@@ -304,4 +318,4 @@ def main(session, **kwargs):
 def Plugins(path,**kwargs):
 	global pluginpath
 	pluginpath = path
-	return PluginDescriptor(name="MeteoPT", description="Previsao Tempo", icon="meteopt.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
+	return PluginDescriptor(name="MeteoPT", description="Previsao Tempo Meteo", icon="meteopt.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
